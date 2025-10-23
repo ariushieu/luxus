@@ -22,8 +22,9 @@ class SettingService
     {
         $settings = $this->settingRepository->getByGroup($group);
 
-        return $settings->mapWithKeys(function ($setting) use ($locale) {
-            return [$setting->key => $setting->getValueByLocale($locale)];
+        // Return full setting objects, keyed by their key
+        return $settings->mapWithKeys(function ($setting) {
+            return [$setting->key => $setting];
         });
     }
 

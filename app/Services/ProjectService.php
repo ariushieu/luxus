@@ -32,6 +32,11 @@ class ProjectService
         return $this->projectRepository->getActive($filters);
     }
 
+    public function getAllActiveProjects(array $filters = [])
+    {
+        return $this->projectRepository->getActive($filters);
+    }
+
     public function getFeaturedProjects(int $limit = 6)
     {
         return $this->projectRepository->getFeatured($limit);
@@ -47,9 +52,15 @@ class ProjectService
         return $this->projectRepository->findBySlug($slug);
     }
 
-    public function getProjectsByCategory(int $categoryId, array $filters = [])
+    public function getProjectsByCategory(int $categoryId, ?int $limit = null, array $filters = [])
     {
-        return $this->projectRepository->getByCategory($categoryId, $filters);
+        $query = $this->projectRepository->getByCategory($categoryId, $filters);
+
+        if ($limit) {
+            return $query->take($limit);
+        }
+
+        return $query;
     }
 
     public function createProject(array $data)

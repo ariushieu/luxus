@@ -357,6 +357,192 @@ php artisan queue:failed
 php artisan queue:retry all
 ```
 
-## 📄 License
+## �️ Web Admin Panel
+
+Ngoài RESTful API, hệ thống còn có **Web-based Admin Panel** đầy đủ với giao diện responsive.
+
+### Truy cập Admin Panel
+
+URL: `http://your-domain.com/admin/login`
+
+**Login Credentials:**
+
+-   Email: `admin@luxus.com`
+-   Password: `Admin@123`
+
+### Admin Panel Features
+
+**1. Dashboard** (`/admin/dashboard`)
+
+-   Thống kê tổng quan: Total Projects, Active Projects, Pending Bookings, Pending Quotes
+-   Bảng Recent Bookings (5 latest)
+-   Bảng Recent Quotes (5 latest)
+-   Bảng Recent Projects (5 latest)
+
+**2. Categories Management** (`/admin/categories`)
+
+-   Listing: Table với project count, status badges
+-   Create: Form bilingual (VI/EN), auto-generate slug
+-   Edit: Pre-filled form
+-   Delete: Prevent deletion if category has projects
+-   Business Rule: Slug must be unique
+
+**3. Projects Management** (`/admin/projects`)
+
+-   Listing: Table with thumbnail, name, category, image count, status
+-   Create:
+    -   Multi-file image upload with preview
+    -   First image automatically set as primary
+    -   Images upload to `Cloudinary/{category_slug}/` folder
+    -   Bilingual content (VI/EN)
+-   Edit:
+    -   Update project info
+    -   View existing images gallery
+    -   Upload additional images via modal
+    -   Delete individual images (with validation)
+-   Business Rules:
+    -   Cannot delete the only image
+    -   Cannot delete primary image without setting another as primary
+    -   Deleting project cascade deletes all images from Cloudinary
+
+**4. Bookings Management** (`/admin/bookings`)
+
+-   Listing: Table with filter tabs (All/Pending/Confirmed/Completed/Cancelled)
+-   Status count badges on tabs
+-   View Details: Full booking info (name, email, phone, date, time, message)
+-   Update Status: Dropdown with admin notes textarea
+-   Status Flow: `pending → confirmed → completed | cancelled`
+
+**5. Quotes Management** (`/admin/quotes`)
+
+-   Listing: Table with filter tabs (All/Pending/Reviewing/Quoted/Accepted/Rejected)
+-   Display quoted amount if available
+-   View Details: Full quote info (name, contact, project type, budget, message)
+-   Update Status:
+    -   Dropdown selection
+    -   Conditional `quoted_amount` field (required when status = "quoted")
+    -   Admin notes textarea
+-   Status Flow: `pending → reviewing → quoted → accepted | rejected`
+-   Validation: Must enter amount when status = "quoted"
+
+**6. Settings Management** (`/admin/settings`)
+
+-   Grouped tabs: Home Settings / Contact Settings / General Settings
+-   Bilingual inputs (VI/EN) for each setting
+-   Bulk update all settings at once
+-   Special validation for email and phone fields
+
+### Admin Routes
+
+```
+GET     /admin/login                        → Login form
+POST    /admin/login                        → Authenticate
+POST    /admin/logout                       → Logout
+GET     /admin/dashboard                    → Dashboard
+
+// Categories CRUD
+GET     /admin/categories                   → List all
+GET     /admin/categories/create            → Create form
+POST    /admin/categories                   → Store
+GET     /admin/categories/{id}/edit         → Edit form
+PUT     /admin/categories/{id}              → Update
+DELETE  /admin/categories/{id}              → Delete
+
+// Projects CRUD + Images
+GET     /admin/projects                     → List all
+GET     /admin/projects/create              → Create form
+POST    /admin/projects                     → Store (with images)
+GET     /admin/projects/{id}/edit           → Edit form
+PUT     /admin/projects/{id}                → Update
+DELETE  /admin/projects/{id}                → Delete (cascade images)
+POST    /admin/projects/{id}/images         → Upload additional image
+DELETE  /admin/project-images/{id}          → Delete single image
+
+// Bookings Management
+GET     /admin/bookings?status=pending      → List with filter
+GET     /admin/bookings/{id}                → View details
+PATCH   /admin/bookings/{id}/status         → Update status
+
+// Quotes Management
+GET     /admin/quotes?status=pending        → List with filter
+GET     /admin/quotes/{id}                  → View details
+PATCH   /admin/quotes/{id}/status           → Update status + amount
+
+// Settings Management
+GET     /admin/settings                     → List grouped
+POST    /admin/settings                     → Bulk update
+```
+
+### Admin Panel UI/UX
+
+**Design:**
+
+-   Color Scheme: Brown gradient (#2C1810 → #8B4513)
+-   Typography: Playfair Display (headings) + Poppins (body)
+-   Components: Bootstrap 5 + Font Awesome 6
+-   Layout: Fixed sidebar (280px) + top navbar
+
+**Responsive:**
+
+-   Desktop: Fixed sidebar navigation
+-   Mobile (< 992px): Collapsible sidebar with floating toggle button
+-   Touch-friendly: Sidebar closes on outside click
+
+**User Feedback:**
+
+-   Success/error alerts with auto-dismiss
+-   Confirmation dialogs for delete actions
+-   Inline validation errors
+-   Color-coded status badges
+
+**JavaScript Features:**
+
+-   Image preview before upload
+-   Auto-generate slug from Vietnamese name (Categories)
+-   Conditional field display (Quotes quoted_amount)
+-   Responsive sidebar toggle
+
+### Authentication
+
+**Guards:**
+
+-   `web` - Regular users (Breeze default)
+-   `admin` - Admin panel (custom, session-based)
+-   `sanctum` - API authentication (token-based)
+
+**Middleware:**
+
+-   `guest:admin` - Admin login page (unauthenticated only)
+-   `auth:admin` - All admin routes (authenticated only)
+
+**Redirect Logic:**
+
+-   Unauthenticated admin accessing `/admin/*` → redirect to `/admin/login`
+-   Unauthenticated user accessing other routes → redirect to `/` (home)
+
+### Cloudinary Integration
+
+**Image Upload Flow:**
+
+1. Admin creates/edits project
+2. Selects category (e.g., "housing")
+3. Uploads images
+4. System uploads to `Luxus/{category_slug}/` folder on Cloudinary
+5. Stores `cloudinary_public_id` and `cloudinary_url` in database
+
+**Image Management:**
+
+-   Multiple images per project
+-   First uploaded image = primary image
+-   Can upload more images after project creation
+-   Delete individual images (with business rule validation)
+-   Cascade delete all images when deleting project
+
+**Validation:**
+
+-   Max 5MB per image
+-   Allowed formats: jpg, jpeg, png, webp
+
+## �📄 License
 
 MIT License

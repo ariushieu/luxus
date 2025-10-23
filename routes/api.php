@@ -83,22 +83,44 @@ Route::prefix('v1/admin')->middleware('auth:sanctum')->group(function () {
     Route::get('/dashboard/stats', [DashboardController::class, 'stats']);
 
     // Categories Management
-    Route::apiResource('categories', AdminCategoryController::class);
+    Route::apiResource('categories', AdminCategoryController::class)->names([
+        'index' => 'api.admin.categories.index',
+        'store' => 'api.admin.categories.store',
+        'show' => 'api.admin.categories.show',
+        'update' => 'api.admin.categories.update',
+        'destroy' => 'api.admin.categories.destroy',
+    ]);
 
     // Projects Management
-    Route::apiResource('projects', AdminProjectController::class);
-    Route::post('/projects/{projectId}/images', [AdminProjectController::class, 'uploadImage']);
-    Route::delete('/project-images/{imageId}', [AdminProjectController::class, 'deleteImage']);
+    Route::apiResource('projects', AdminProjectController::class)->names([
+        'index' => 'api.admin.projects.index',
+        'store' => 'api.admin.projects.store',
+        'show' => 'api.admin.projects.show',
+        'update' => 'api.admin.projects.update',
+        'destroy' => 'api.admin.projects.destroy',
+    ]);
+    Route::post('/projects/{projectId}/images', [AdminProjectController::class, 'uploadImage'])->name('api.admin.projects.uploadImage');
+    Route::delete('/project-images/{imageId}', [AdminProjectController::class, 'deleteImage'])->name('api.admin.projects.deleteImage');
 
     // Bookings Management
-    Route::apiResource('bookings', AdminBookingController::class)->except(['store']);
-    Route::patch('/bookings/{id}/status', [AdminBookingController::class, 'updateStatus']);
-    Route::get('/bookings-pending', [AdminBookingController::class, 'pending']);
+    Route::apiResource('bookings', AdminBookingController::class)->except(['store'])->names([
+        'index' => 'api.admin.bookings.index',
+        'show' => 'api.admin.bookings.show',
+        'update' => 'api.admin.bookings.update',
+        'destroy' => 'api.admin.bookings.destroy',
+    ]);
+    Route::patch('/bookings/{id}/status', [AdminBookingController::class, 'updateStatus'])->name('api.admin.bookings.updateStatus');
+    Route::get('/bookings-pending', [AdminBookingController::class, 'pending'])->name('api.admin.bookings.pending');
 
     // Quotes Management
-    Route::apiResource('quotes', AdminQuoteController::class)->except(['store']);
-    Route::patch('/quotes/{id}/status', [AdminQuoteController::class, 'updateStatus']);
-    Route::get('/quotes-pending', [AdminQuoteController::class, 'pending']);
+    Route::apiResource('quotes', AdminQuoteController::class)->except(['store'])->names([
+        'index' => 'api.admin.quotes.index',
+        'show' => 'api.admin.quotes.show',
+        'update' => 'api.admin.quotes.update',
+        'destroy' => 'api.admin.quotes.destroy',
+    ]);
+    Route::patch('/quotes/{id}/status', [AdminQuoteController::class, 'updateStatus'])->name('api.admin.quotes.updateStatus');
+    Route::get('/quotes-pending', [AdminQuoteController::class, 'pending'])->name('api.admin.quotes.pending');
 
     // Settings Management
     Route::get('/settings', [AdminSettingController::class, 'index']);
