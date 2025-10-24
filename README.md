@@ -1,11 +1,12 @@
 # Luxus - Luxury Interior Design Platform
 
-A modern web platform for managing and showcasing luxury interior design projects with booking, quotation, and image management capabilities.
+A modern monolithic Laravel application for managing and showcasing luxury interior design projects with booking, quotation, and image management capabilities.
 
 ## Tech Stack
 
--   Laravel 12.x (PHP 8.2+)
--   MySQL
+-   Laravel 12.x (PHP 8.2+) - Monolithic MVC Architecture
+-   MySQL Database
+-   Blade Templates
 -   TailwindCSS 3.x + Alpine.js
 -   Cloudinary (Image Management)
 -   Laravel Queue (Background Jobs)
@@ -60,21 +61,19 @@ MAIL_PASSWORD=your_app_password
 
 ## Development
 
-Run all services at once:
-
 ```bash
-composer dev
-```
-
-Or run individually:
-
-```bash
-php artisan serve          # Laravel server
-php artisan queue:work     # Queue worker
-npm run dev                # Vite dev server
+# Start server
+php artisan serve
 ```
 
 Access: http://localhost:8000
+
+**Optional services:**
+
+```bash
+php artisan queue:work     # If using queue features
+npm run dev                # If developing CSS/JS
+```
 
 ## Production Build
 
