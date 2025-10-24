@@ -18,9 +18,11 @@ class StoreQuoteRequest extends FormRequest
             'client_email' => 'required|email|max:255',
             'client_phone' => 'required|string|max:20',
             'project_type' => 'nullable|in:housing,commercial,office',
+            'project_id' => 'nullable|exists:projects,id',
+            'reference_project' => 'nullable|string|max:255',
             'budget' => 'nullable|numeric|min:0',
             'area' => 'nullable|numeric|min:0',
-            'request_details' => 'required|string|max:2000',
+            'request_details' => 'nullable|string|max:2000',
         ];
     }
 

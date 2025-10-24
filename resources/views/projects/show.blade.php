@@ -259,7 +259,7 @@
 @section('content')
 <!-- Project Hero -->
 @php
-$heroImage = $project->primary_image ? $project->primary_image->cloudinary_url : 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=1920';
+$heroImage = $project->primaryImage ? $project->primaryImage->cloudinary_url : 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=1920';
 @endphp
 <div class="project-detail-hero">
     <img src="{{ $heroImage }}" alt="{{ $project->title_vi }}">
@@ -448,6 +448,8 @@ $heroImage = $project->primary_image ? $project->primary_image->cloudinary_url :
                     <form action="{{ route('quote.store') }}" method="POST" id="quoteForm">
                         @csrf
                         <input type="hidden" name="project_type" value="{{ $project->category->slug }}">
+                        <input type="hidden" name="project_id" value="{{ $project->id }}">
+                        <input type="hidden" name="reference_project" value="{{ $project->title_vi }}">
 
                         <div class="mb-3">
                             <label class="form-label"><i class="fas fa-user me-2"></i>Họ tên *</label>

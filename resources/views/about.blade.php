@@ -13,16 +13,6 @@
         overflow: hidden;
     }
 
-    .about-hero::after {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 100px;
-        background: linear-gradient(to top, white, transparent);
-    }
-
     .milestone-card {
         background: white;
         border-radius: 12px;

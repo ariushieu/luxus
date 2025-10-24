@@ -14,6 +14,8 @@ class Quote extends Model
         'client_email',
         'client_phone',
         'project_type',
+        'project_id',
+        'reference_project',
         'budget',
         'area',
         'request_details',
@@ -42,5 +44,13 @@ class Quote extends Model
     public function scopeReviewing($query)
     {
         return $query->where('status', 'reviewing');
+    }
+
+    /**
+     * Get the project that the quote references
+     */
+    public function project()
+    {
+        return $this->belongsTo(Project::class);
     }
 }

@@ -40,21 +40,21 @@
             background: rgba(255, 255, 255, 0.98);
             backdrop-filter: blur(10px);
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
-            padding: 1.2rem 0;
+            padding: 0.8rem 0;
             transition: all 0.3s ease;
         }
 
         .navbar.scrolled {
-            padding: 0.8rem 0;
+            padding: 0.5rem 0;
             box-shadow: 0 6px 40px rgba(0, 0, 0, 0.12);
         }
 
         .navbar-brand {
             font-family: 'Cormorant Garamond', serif;
-            font-size: 2.2rem;
+            font-size: 1.8rem;
             font-weight: 700;
             color: var(--primary-color) !important;
-            letter-spacing: 4px;
+            letter-spacing: 3px;
             text-transform: uppercase;
             position: relative;
             transition: all 0.3s ease;
@@ -78,13 +78,13 @@
         .navbar-nav .nav-link {
             color: var(--text-dark);
             font-weight: 500;
-            margin: 0 1.2rem;
-            padding: 0.5rem 0;
+            margin: 0 1rem;
+            padding: 0.4rem 0;
             position: relative;
             transition: all 0.3s ease;
             text-transform: uppercase;
-            font-size: 0.9rem;
-            letter-spacing: 1px;
+            font-size: 0.85rem;
+            letter-spacing: 0.8px;
         }
 
         .navbar-nav .nav-link::before {
@@ -314,13 +314,14 @@
         /* Responsive */
         @media (max-width: 768px) {
             .navbar-brand {
-                font-size: 1.6rem;
+                font-size: 1.5rem;
                 letter-spacing: 2px;
             }
 
             .navbar-nav .nav-link {
                 margin: 0.5rem 0;
                 text-align: center;
+                font-size: 0.9rem;
             }
 
             .social-icons {

@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Interfaces\QuoteRepositoryInterface;
 use App\Jobs\SendQuoteNotificationJob;
+use Illuminate\Support\Facades\Log;
 
 class QuoteService
 {
@@ -26,14 +27,19 @@ class QuoteService
 
     public function createQuote(array $data)
     {
+        // Debug: Log incoming data
+        Log::info('Creating quote with data:', $data);
+
         $quote = $this->quoteRepository->create($data);
+
+        // Log created quote
+        Log::info('Quote created:', ['id' => $quote->id, 'client_name' => $quote->client_name]);
 
         // Dispatch job to send email notification
         SendQuoteNotificationJob::dispatch($quote);
 
         return $quote;
     }
-
     public function updateQuote(int $id, array $data)
     {
         return $this->quoteRepository->update($id, $data);

@@ -56,7 +56,7 @@ class ProjectRepository implements ProjectRepositoryInterface
     public function findBySlug(string $slug)
     {
         return Project::where('slug', $slug)
-            ->with(['category', 'images'])
+            ->with(['category', 'images', 'primaryImage'])
             ->firstOrFail();
     }
 

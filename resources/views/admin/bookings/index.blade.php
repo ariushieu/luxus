@@ -72,48 +72,79 @@
                     @forelse($bookings as $booking)
                     <tr>
                         <td>
-                            <strong>{{ $booking->name }}</strong>
-                        </td>
-                        <td>
-                            <div>
-                                <i class="fas fa-envelope text-muted"></i> {{ $booking->email }}
-                                <br>
-                                <i class="fas fa-phone text-muted"></i> {{ $booking->phone }}
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-circle me-2"
+                                    style="width: 40px; height: 40px; border-radius: 50%; 
+                                            background: linear-gradient(135deg, #8B6B47 0%, #D4AF37 100%); 
+                                            color: white; display: flex; align-items: center; 
+                                            justify-content: center; font-weight: bold; font-size: 0.9rem;">
+                                    {{ substr($booking->client_name ?? 'N', 0, 1) }}
+                                </div>
+                                <strong>{{ $booking->client_name ?? 'N/A' }}</strong>
                             </div>
                         </td>
                         <td>
-                            <div>
-                                <i class="fas fa-calendar text-muted"></i> {{ \Carbon\Carbon::parse($booking->booking_date)->format('d/m/Y') }}
-                                <br>
-                                <i class="fas fa-clock text-muted"></i> {{ \Carbon\Carbon::parse($booking->booking_time)->format('H:i') }}
+                            <div class="small">
+                                <div class="mb-1">
+                                    <i class="fas fa-envelope text-primary me-1"></i>
+                                    <a href="mailto:{{ $booking->client_email }}" class="text-decoration-none">
+                                        {{ $booking->client_email ?? 'N/A' }}
+                                    </a>
+                                </div>
+                                <div>
+                                    <i class="fas fa-phone text-success me-1"></i>
+                                    <a href="tel:{{ $booking->client_phone }}" class="text-decoration-none">
+                                        {{ $booking->client_phone ?? 'N/A' }}
+                                    </a>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="small">
+                                <div class="mb-1">
+                                    <i class="fas fa-calendar text-primary me-1"></i>
+                                    {{ \Carbon\Carbon::parse($booking->booking_time)->format('d/m/Y') }}
+                                </div>
+                                <div>
+                                    <i class="fas fa-clock text-muted me-1"></i>
+                                    {{ \Carbon\Carbon::parse($booking->booking_time)->format('H:i') }}
+                                </div>
                             </div>
                         </td>
                         <td>
                             @if($booking->status === 'pending')
-                            <span class="badge bg-warning">Chờ xác nhận</span>
+                            <span class="badge bg-warning text-dark"><i class="fas fa-clock me-1"></i>Chờ xác nhận</span>
                             @elseif($booking->status === 'confirmed')
-                            <span class="badge bg-info">Đã xác nhận</span>
+                            <span class="badge bg-info"><i class="fas fa-check-circle me-1"></i>Đã xác nhận</span>
                             @elseif($booking->status === 'completed')
-                            <span class="badge bg-success">Hoàn thành</span>
+                            <span class="badge bg-success"><i class="fas fa-check-double me-1"></i>Hoàn thành</span>
                             @elseif($booking->status === 'cancelled')
-                            <span class="badge bg-danger">Đã hủy</span>
+                            <span class="badge bg-danger"><i class="fas fa-times-circle me-1"></i>Đã hủy</span>
                             @endif
                         </td>
                         <td>
-                            <small>{{ $booking->created_at->format('d/m/Y H:i') }}</small>
+                            <small class="text-muted">
+                                <i class="far fa-calendar-plus me-1"></i>
+                                {{ $booking->created_at->format('d/m/Y H:i') }}
+                            </small>
                         </td>
                         <td class="text-center">
                             <a href="{{ route('admin.bookings.show', $booking) }}"
-                                class="btn btn-sm btn-primary"
-                                title="Xem chi tiết">
+                                class="btn btn-sm btn-primary-custom"
+                                title="Xem chi tiết"
+                                style="padding: 6px 12px;">
                                 <i class="fas fa-eye"></i>
                             </a>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="text-center text-muted py-4">
-                            Không có lịch hẹn nào.
+                        <td colspan="6" class="text-center py-5">
+                            <div class="text-muted">
+                                <i class="fas fa-inbox fa-3x mb-3 d-block" style="opacity: 0.3;"></i>
+                                <h5>Không có lịch hẹn nào</h5>
+                                <p class="mb-0">Danh sách trống. Lịch hẹn từ khách hàng sẽ hiển thị tại đây.</p>
+                            </div>
                         </td>
                     </tr>
                     @endforelse
