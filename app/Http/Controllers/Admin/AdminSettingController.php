@@ -35,11 +35,25 @@ class AdminSettingController extends Controller
             // Get all settings data
             $settingsData = $request->input('settings', []);
 
+            // Log incoming data for debugging
+            Log::info('Settings Update Request', [
+                'all_input' => $request->all(),
+                'settings_data' => $settingsData
+            ]);
+
+            if (empty($settingsData)) {
+                Log::warning('No settings data received');
+                return back()->with('error', 'Không có dữ liệu cài đặt để cập nhật!');
+            }
+
+            $updatedCount = 0;
+
             // Update each setting
             foreach ($settingsData as $key => $data) {
                 $setting = Setting::where('key', $key)->first();
 
                 if (!$setting) {
+                    Log::warning("Setting not found: {$key}");
                     continue;
                 }
 
@@ -60,6 +74,9 @@ class AdminSettingController extends Controller
                         'value_vi' => $uploadResult['url'],
                         'value_en' => $uploadResult['url'],
                     ]);
+
+                    $updatedCount++;
+                    Log::info("Updated image setting: {$key}");
 
                     continue; // Skip to next iteration
                 }
@@ -85,16 +102,25 @@ class AdminSettingController extends Controller
                     }
 
                     // Update via service
-                    $this->settingService->updateSetting($key, [
+                    // CRITICAL: Use isset() cho value_en để có thể XÓA (set empty string)
+                    // Nếu không có trong request thì giữ nguyên giá trị cũ
+                    $updateData = [
                         'value_vi' => $data['value_vi'] ?? $setting->value_vi,
-                        'value_en' => $data['value_en'] ?? $setting->value_en,
-                    ]);
+                        'value_en' => isset($data['value_en']) ? $data['value_en'] : $setting->value_en,
+                    ];
+
+                    Log::info("Updating setting: {$key}", $updateData);
+                    $this->settingService->updateSetting($key, $updateData);
+                    $updatedCount++;
                 }
             }
 
-            return back()->with('success', 'Cài đặt đã được cập nhật thành công!');
+            Log::info("Settings update completed. Updated {$updatedCount} settings.");
+            return back()->with('success', "Đã cập nhật thành công {$updatedCount} cài đặt!");
         } catch (\Exception $e) {
-            Log::error('Error updating settings: ' . $e->getMessage());
+            Log::error('Error updating settings: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
             return back()->with('error', 'Lỗi khi cập nhật cài đặt: ' . $e->getMessage());
         }
     }

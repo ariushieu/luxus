@@ -7,20 +7,6 @@
     <h2>Cài đặt Website</h2>
 </div>
 
-@if(session('success'))
-<div class="alert alert-success alert-dismissible fade show" role="alert">
-    {{ session('success') }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-</div>
-@endif
-
-@if(session('error'))
-<div class="alert alert-danger alert-dismissible fade show" role="alert">
-    {{ session('error') }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-</div>
-@endif
-
 @if($errors->any())
 <div class="alert alert-danger alert-dismissible fade show" role="alert">
     <strong>Có lỗi xảy ra:</strong>
@@ -299,7 +285,7 @@
 
     <!-- Save Button -->
     <div class="mt-3">
-        <button type="submit" class="btn btn-primary btn-lg">
+        <button type="submit" class="btn btn-primary btn-lg" id="saveSettingsBtn">
             <i class="fas fa-save"></i> Lưu Tất cả Cài đặt
         </button>
     </div>
@@ -307,6 +293,21 @@
 
 @push('scripts')
 <script>
+    // Add loading state to save button
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const btn = document.getElementById('saveSettingsBtn');
+        const originalHtml = btn.innerHTML;
+
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>Đang lưu...';
+
+        // Re-enable after 10s in case of error (settings can take longer)
+        setTimeout(function() {
+            btn.disabled = false;
+            btn.innerHTML = originalHtml;
+        }, 10000);
+    });
+
     function previewAboutImage(event, key) {
         const file = event.target.files[0];
         const preview = document.getElementById('preview_' + key);

@@ -28,48 +28,42 @@
         <ul class="nav nav-pills p-3" style="gap: 8px;">
             <li class="nav-item">
                 <a class="nav-link {{ !request('status') ? 'active' : '' }}"
-                    href="{{ route('admin.quotes.index') }}"
-                    style="{{ !request('status') ? 'background: linear-gradient(135deg, #8B6B47 0%, #D4AF37 100%); color: white;' : 'color: #8B6B47;' }}">
+                    href="{{ route('admin.quotes.index') }}">
                     <i class="fas fa-list me-1"></i> Tất cả
                     <span class="badge {{ !request('status') ? 'bg-light text-dark' : 'bg-secondary' }} ms-1">{{ $statusCounts['all'] }}</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link {{ request('status') === 'pending' ? 'active' : '' }}"
-                    href="{{ route('admin.quotes.index', ['status' => 'pending']) }}"
-                    style="{{ request('status') === 'pending' ? 'background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%); color: #000;' : 'color: #8B6B47;' }}">
+                <a class="nav-link {{ request('status') === 'pending' ? 'active status-pending' : '' }}"
+                    href="{{ route('admin.quotes.index', ['status' => 'pending']) }}">
                     <i class="fas fa-clock me-1"></i> Chờ xử lý
                     <span class="badge {{ request('status') === 'pending' ? 'bg-light text-dark' : 'bg-warning' }} ms-1">{{ $statusCounts['pending'] }}</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link {{ request('status') === 'reviewing' ? 'active' : '' }}"
-                    href="{{ route('admin.quotes.index', ['status' => 'reviewing']) }}"
-                    style="{{ request('status') === 'reviewing' ? 'background: linear-gradient(135deg, #17a2b8 0%, #0d8fa8 100%); color: white;' : 'color: #8B6B47;' }}">
+                <a class="nav-link {{ request('status') === 'reviewing' ? 'active status-reviewing' : '' }}"
+                    href="{{ route('admin.quotes.index', ['status' => 'reviewing']) }}">
                     <i class="fas fa-eye me-1"></i> Đang xem xét
                     <span class="badge {{ request('status') === 'reviewing' ? 'bg-light text-dark' : 'bg-info' }} ms-1">{{ $statusCounts['reviewing'] }}</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link {{ request('status') === 'quoted' ? 'active' : '' }}"
-                    href="{{ route('admin.quotes.index', ['status' => 'quoted']) }}"
-                    style="{{ request('status') === 'quoted' ? 'background: linear-gradient(135deg, #8B6B47 0%, #D4AF37 100%); color: white;' : 'color: #8B6B47;' }}">
+                <a class="nav-link {{ request('status') === 'quoted' ? 'active status-quoted' : '' }}"
+                    href="{{ route('admin.quotes.index', ['status' => 'quoted']) }}">
                     <i class="fas fa-check-circle me-1"></i> Đã báo giá
                     <span class="badge {{ request('status') === 'quoted' ? 'bg-light text-dark' : 'bg-primary' }} ms-1">{{ $statusCounts['quoted'] }}</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link {{ request('status') === 'accepted' ? 'active' : '' }}"
-                    href="{{ route('admin.quotes.index', ['status' => 'accepted']) }}"
-                    style="{{ request('status') === 'accepted' ? 'background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white;' : 'color: #8B6B47;' }}">
+                <a class="nav-link {{ request('status') === 'accepted' ? 'active status-accepted' : '' }}"
+                    href="{{ route('admin.quotes.index', ['status' => 'accepted']) }}">
                     <i class="fas fa-handshake me-1"></i> Đã chấp nhận
                     <span class="badge {{ request('status') === 'accepted' ? 'bg-light text-dark' : 'bg-success' }} ms-1">{{ $statusCounts['accepted'] }}</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link {{ request('status') === 'rejected' ? 'active' : '' }}"
-                    href="{{ route('admin.quotes.index', ['status' => 'rejected']) }}"
-                    style="{{ request('status') === 'rejected' ? 'background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); color: white;' : 'color: #8B6B47;' }}">
+                <a class="nav-link {{ request('status') === 'rejected' ? 'active status-rejected' : '' }}"
+                    href="{{ route('admin.quotes.index', ['status' => 'rejected']) }}">
                     <i class="fas fa-times-circle me-1"></i> Đã từ chối
                     <span class="badge {{ request('status') === 'rejected' ? 'bg-light text-dark' : 'bg-danger' }} ms-1">{{ $statusCounts['rejected'] }}</span>
                 </a>
@@ -143,7 +137,7 @@
                         ];
                         $type = $projectTypes[$quote->project_type] ?? ['icon' => 'question', 'text' => $quote->project_type ?? 'N/A', 'color' => '#95a5a6'];
                         @endphp
-                        <span class="badge" style="background-color: {{ $type['color'] }}; font-size: 0.85rem;">
+                        <span class="badge project-type-badge" data-color="{{ $type['color'] }}">
                             <i class="fas fa-{{ $type['icon'] }} me-1"></i>{{ $type['text'] }}
                         </span>
                     </td>
@@ -238,6 +232,37 @@
         font-weight: 600;
         transition: all 0.3s ease;
         border: 2px solid transparent;
+        color: #8B6B47;
+    }
+
+    .nav-pills .nav-link.active {
+        background: linear-gradient(135deg, #8B6B47 0%, #D4AF37 100%);
+        color: white;
+    }
+
+    .nav-pills .nav-link.active.status-pending {
+        background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+        color: #000;
+    }
+
+    .nav-pills .nav-link.active.status-reviewing {
+        background: linear-gradient(135deg, #17a2b8 0%, #0d8fa8 100%);
+        color: white;
+    }
+
+    .nav-pills .nav-link.active.status-quoted {
+        background: linear-gradient(135deg, #8B6B47 0%, #D4AF37 100%);
+        color: white;
+    }
+
+    .nav-pills .nav-link.active.status-accepted {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+    }
+
+    .nav-pills .nav-link.active.status-rejected {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        color: white;
     }
 
     .nav-pills .nav-link:not(.active):hover {
@@ -249,5 +274,21 @@
     .avatar-circle {
         box-shadow: 0 2px 8px rgba(139, 107, 71, 0.3);
     }
+
+    .project-type-badge {
+        font-size: 0.85rem;
+    }
 </style>
+
+<script>
+    // Set background colors for project type badges dynamically
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.project-type-badge').forEach(function(badge) {
+            const color = badge.getAttribute('data-color');
+            if (color) {
+                badge.style.backgroundColor = color;
+            }
+        });
+    });
+</script>
 @endpush
