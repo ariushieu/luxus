@@ -171,116 +171,6 @@
             padding-top: 2rem;
         }
 
-        /* Enhanced Social Icons with Premium Design */
-        .social-icons {
-            position: fixed;
-            right: 30px;
-            bottom: 30px;
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .social-icon {
-            width: 65px;
-            height: 65px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.6rem;
-            text-decoration: none;
-            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.25);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .social-icon::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            transform: translate(-50%, -50%);
-            transition: width 0.4s, height 0.4s;
-        }
-
-        .social-icon:hover::before {
-            width: 100%;
-            height: 100%;
-        }
-
-        .social-icon.facebook {
-            background: linear-gradient(135deg, #4267B2, #3b5998);
-        }
-
-        .social-icon.wechat {
-            background: linear-gradient(135deg, #09b83e, #078a2f);
-        }
-
-        .social-icon.phone {
-            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
-            animation: pulse-ring 2.5s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
-        }
-
-        @keyframes pulse-ring {
-
-            0%,
-            100% {
-                box-shadow: 0 0 0 0px rgba(212, 175, 55, 0.5),
-                    0 6px 25px rgba(0, 0, 0, 0.25);
-            }
-
-            50% {
-                box-shadow: 0 0 0 15px rgba(212, 175, 55, 0),
-                    0 6px 25px rgba(0, 0, 0, 0.25);
-            }
-        }
-
-        .social-icon:hover {
-            transform: translateY(-8px) scale(1.15);
-            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.35);
-        }
-
-        .social-icon .tooltip-text {
-            position: absolute;
-            right: 75px;
-            background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
-            color: white;
-            padding: 10px 16px;
-            border-radius: 8px;
-            white-space: nowrap;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s, transform 0.3s;
-            font-weight: 600;
-            font-size: 0.9rem;
-            letter-spacing: 0.5px;
-            transform: translateX(10px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .social-icon .tooltip-text::after {
-            content: '';
-            position: absolute;
-            right: -8px;
-            top: 50%;
-            transform: translateY(-50%);
-            border: 8px solid transparent;
-            border-left-color: var(--primary-color);
-        }
-
-        .social-icon:hover .tooltip-text {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
         /* Scroll to Top Button */
         .scroll-to-top {
             position: fixed;
@@ -324,26 +214,9 @@
                 font-size: 0.9rem;
             }
 
-            .social-icons {
-                flex-direction: row;
-                right: 50%;
-                transform: translateX(50%);
-                bottom: 15px;
-            }
-
-            .social-icon {
-                width: 55px;
-                height: 55px;
-                font-size: 1.3rem;
-            }
-
-            .social-icon .tooltip-text {
-                display: none;
-            }
-
             .scroll-to-top {
                 left: 15px;
-                bottom: 90px;
+                bottom: 15px;
                 width: 45px;
                 height: 45px;
             }
@@ -478,22 +351,6 @@
     <button class="scroll-to-top" id="scrollToTop">
         <i class="fas fa-arrow-up"></i>
     </button>
-
-    <!-- Social Icons -->
-    <div class="social-icons">
-        <a href="https://facebook.com/luxus" target="_blank" class="social-icon facebook" title="Facebook">
-            <i class="fab fa-facebook-f"></i>
-            <span class="tooltip-text d-none d-md-inline">Facebook</span>
-        </a>
-        <a href="https://wechat.com/luxus" target="_blank" class="social-icon wechat" title="WeChat">
-            <i class="fab fa-weixin"></i>
-            <span class="tooltip-text d-none d-md-inline">WeChat</span>
-        </a>
-        <a href="tel:+84123456789" class="social-icon phone" title="Hotline">
-            <i class="fas fa-phone"></i>
-            <span class="tooltip-text d-none d-md-inline">Hotline</span>
-        </a>
-    </div>
 
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
