@@ -22,3 +22,6 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Deployment documentation (contains sensitive info)
+DEPLOYMENT_GUIDE.md
