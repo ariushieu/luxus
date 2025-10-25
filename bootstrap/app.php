@@ -28,6 +28,15 @@ return Application::configure(basePath: dirname(__DIR__))
             }
             return route('home'); // For regular users, redirect to home
         });
+
+        // Redirect authenticated admin users away from login page
+        $middleware->redirectUsersTo(function ($request) {
+            // Check if it's an admin route and user is authenticated as admin
+            if (($request->is('admin') || $request->is('admin/*')) && $request->user('admin')) {
+                return route('admin.dashboard');
+            }
+            return route('home'); // For regular users
+        });
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (\Throwable $e, $request) {

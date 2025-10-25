@@ -173,7 +173,74 @@
             font-weight: 700;
             font-size: 1.1rem;
             box-shadow: 0 4px 12px rgba(139, 107, 71, 0.3);
-            border: 2px solid white;
+            border: 3px solid white;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .admin-avatar::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 100%);
+        }
+
+        .admin-avatar:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 18px rgba(139, 107, 71, 0.5);
+        }
+
+        .admin-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .dropdown-toggle::after {
+            margin-left: 8px;
+        }
+
+        .dropdown-menu {
+            border: none;
+            box-shadow: 0 8px 24px rgba(139, 107, 71, 0.15);
+            border-radius: 12px;
+            padding: 8px;
+            min-width: 220px;
+        }
+
+        .dropdown-item {
+            border-radius: 8px;
+            padding: 10px 16px;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .dropdown-item:hover {
+            background: linear-gradient(135deg, rgba(139, 107, 71, 0.1) 0%, rgba(212, 175, 55, 0.05) 100%);
+            color: var(--primary-color);
+        }
+
+        .dropdown-item i {
+            width: 20px;
+        }
+
+        .user-info-dropdown {
+            padding: 12px 16px;
+            border-bottom: 1px solid #e9ecef;
+            margin-bottom: 8px;
+        }
+
+        .user-info-dropdown .user-name {
+            font-weight: 700;
+            color: var(--dark-bg);
+            margin-bottom: 4px;
+        }
+
+        .user-info-dropdown .user-email {
+            font-size: 0.85rem;
+            color: #6c757d;
         }
 
         /* Content Area */
@@ -500,16 +567,30 @@
                 <div class="dropdown">
                     <button class="btn btn-link text-decoration-none dropdown-toggle d-flex align-items-center"
                         type="button"
-                        data-bs-toggle="dropdown">
+                        data-bs-toggle="dropdown"
+                        style="color: var(--dark-bg);">
                         <div class="admin-avatar me-2">
-                            {{ substr(Auth::guard('admin')->user()->name, 0, 1) }}
+                            @if(Auth::guard('admin')->user()->avatar)
+                            <img src="{{ Auth::guard('admin')->user()->avatar }}" alt="Admin Avatar">
+                            @else
+                            <i class="fas fa-user-shield" style="font-size: 1.3rem;"></i>
+                            @endif
                         </div>
-                        <span class="d-none d-md-inline">{{ Auth::guard('admin')->user()->name }}</span>
+                        <span class="d-none d-md-inline fw-semibold">{{ Auth::guard('admin')->user()->name }}</span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end">
+                        <li class="user-info-dropdown">
+                            <div class="user-name">{{ Auth::guard('admin')->user()->name }}</div>
+                            <div class="user-email">{{ Auth::guard('admin')->user()->email }}</div>
+                        </li>
                         <li>
                             <a class="dropdown-item" href="{{ route('home') }}" target="_blank">
-                                <i class="fas fa-globe me-2"></i>View Website
+                                <i class="fas fa-globe"></i> Xem Website
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('admin.dashboard') }}">
+                                <i class="fas fa-tachometer-alt"></i> Dashboard
                             </a>
                         </li>
                         <li>
@@ -519,7 +600,7 @@
                             <form method="POST" action="{{ route('admin.logout') }}">
                                 @csrf
                                 <button type="submit" class="dropdown-item text-danger">
-                                    <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                    <i class="fas fa-sign-out-alt"></i> Đăng xuất
                                 </button>
                             </form>
                         </li>
@@ -542,6 +623,27 @@
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 <i class="fas fa-exclamation-circle me-2"></i>
                 {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            @endif
+
+            @if(session('warning'))
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                {{ session('warning') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            @endif
+
+            @if($errors->any())
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-times-circle me-2"></i>
+                <strong>Có lỗi xảy ra:</strong>
+                <ul class="mb-0 mt-2">
+                    @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
             @endif

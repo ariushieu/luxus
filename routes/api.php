@@ -37,6 +37,26 @@ Route::prefix('v1')->group(function () {
     Route::get('/settings', [SettingController::class, 'index']);
     Route::get('/settings/{key}', [SettingController::class, 'show']);
 
+    // Test settings endpoint (for debugging)
+    Route::get('/test-settings', function () {
+        $settings = \App\Models\Setting::orderBy('group')->orderBy('key')->get();
+        return response()->json([
+            'success' => true,
+            'total' => $settings->count(),
+            'grouped' => $settings->groupBy('group')->map(function ($items) {
+                return $items->map(function ($item) {
+                    return [
+                        'key' => $item->key,
+                        'value_vi' => $item->value_vi,
+                        'value_en' => $item->value_en,
+                        'type' => $item->type,
+                        'updated_at' => $item->updated_at,
+                    ];
+                });
+            })
+        ]);
+    });
+
     // Lead Generation - Public
     Route::post('/bookings', [BookingController::class, 'store']);
     Route::post('/quotes', [QuoteController::class, 'store']);

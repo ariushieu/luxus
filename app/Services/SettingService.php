@@ -22,9 +22,25 @@ class SettingService
     {
         $settings = $this->settingRepository->getByGroup($group);
 
-        // Return full setting objects, keyed by their key
+        // Return settings as objects, keyed by their key - for web views
         return $settings->mapWithKeys(function ($setting) {
             return [$setting->key => $setting];
+        });
+    }
+
+    /**
+     * Get settings by group for API (returns simple key-value pairs)
+     */
+    public function getSettingsByGroupForApi(string $group, string $locale = 'vi')
+    {
+        $settings = $this->settingRepository->getByGroup($group);
+
+        // Return key-value pairs with the correct locale for API
+        return $settings->mapWithKeys(function ($setting) use ($locale) {
+            return [$setting->key => [
+                'value' => $setting->getValueByLocale($locale),
+                'type' => $setting->type,
+            ]];
         });
     }
 

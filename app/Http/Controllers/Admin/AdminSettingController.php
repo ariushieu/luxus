@@ -37,16 +37,17 @@ class AdminSettingController extends Controller
 
             // Log incoming data for debugging
             Log::info('Settings Update Request', [
-                'all_input' => $request->all(),
-                'settings_data' => $settingsData
+                'settings_count' => count($settingsData),
+                'has_files' => $request->hasFile('settings')
             ]);
 
             if (empty($settingsData)) {
                 Log::warning('No settings data received');
-                return back()->with('error', 'Không có dữ liệu cài đặt để cập nhật!');
+                return redirect()->back()->with('error', 'Không có dữ liệu cài đặt để cập nhật!');
             }
 
             $updatedCount = 0;
+            $errors = [];
 
             // Update each setting
             foreach ($settingsData as $key => $data) {
@@ -59,69 +60,87 @@ class AdminSettingController extends Controller
 
                 // Handle image upload for about images
                 if ($setting->type === 'image' && $request->hasFile("settings.{$key}.image")) {
-                    $image = $request->file("settings.{$key}.image");
+                    try {
+                        $image = $request->file("settings.{$key}.image");
 
-                    // Validate image
-                    $request->validate([
-                        "settings.{$key}.image" => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120'
-                    ]);
+                        // Validate image
+                        $validated = $request->validate([
+                            "settings.{$key}.image" => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120'
+                        ]);
 
-                    // Upload to Cloudinary using CloudinaryService
-                    $uploadResult = $this->cloudinaryService->uploadImage($image, 'Luxus/settings');
+                        // Upload to Cloudinary using CloudinaryService
+                        $uploadResult = $this->cloudinaryService->uploadImage($image, 'Luxus/settings');
 
-                    // Update setting with image URL
-                    $this->settingService->updateSetting($key, [
-                        'value_vi' => $uploadResult['url'],
-                        'value_en' => $uploadResult['url'],
-                    ]);
+                        // Update setting with image URL
+                        $this->settingService->updateSetting($key, [
+                            'value_vi' => $uploadResult['url'],
+                            'value_en' => $uploadResult['url'],
+                        ]);
 
-                    $updatedCount++;
-                    Log::info("Updated image setting: {$key}");
+                        $updatedCount++;
+                        Log::info("Updated image setting: {$key}", ['url' => $uploadResult['url']]);
+                    } catch (\Exception $e) {
+                        $errors[] = "Lỗi upload ảnh {$key}: " . $e->getMessage();
+                        Log::error("Image upload failed for {$key}", ['error' => $e->getMessage()]);
+                    }
 
                     continue; // Skip to next iteration
                 }
 
                 // Handle text/textarea fields
                 if ($setting->type !== 'image') {
-                    // Additional validation based on setting type
+                    // Validation
                     if ($setting->key === 'email' && isset($data['value_vi']) && !empty($data['value_vi'])) {
                         if (!filter_var($data['value_vi'], FILTER_VALIDATE_EMAIL)) {
-                            return back()->withErrors(['settings.' . $key . '.value_vi' => 'Email không hợp lệ!']);
+                            $errors[] = "Email không hợp lệ cho {$key}";
+                            continue;
                         }
                     }
 
                     if ($setting->key === 'phone' && isset($data['value_vi']) && !empty($data['value_vi'])) {
                         if (!preg_match('/^[\d\s\-\+\(\)]+$/', $data['value_vi'])) {
-                            return back()->withErrors(['settings.' . $key . '.value_vi' => 'Số điện thoại không hợp lệ!']);
+                            $errors[] = "Số điện thoại không hợp lệ cho {$key}";
+                            continue;
                         }
                     }
 
                     // Validate required field for about_intro
-                    if ($setting->key === 'about_intro' && empty($data['value_vi'])) {
-                        return back()->withErrors(['settings.' . $key . '.value_vi' => 'Đoạn giới thiệu (Tiếng Việt) là bắt buộc!']);
+                    if ($setting->key === 'about_intro' && (!isset($data['value_vi']) || empty(trim($data['value_vi'])))) {
+                        $errors[] = "Đoạn giới thiệu (Tiếng Việt) là bắt buộc!";
+                        continue;
                     }
 
-                    // Update via service
-                    // CRITICAL: Use isset() cho value_en để có thể XÓA (set empty string)
-                    // Nếu không có trong request thì giữ nguyên giá trị cũ
+                    // Prepare update data - always update both fields
                     $updateData = [
-                        'value_vi' => $data['value_vi'] ?? $setting->value_vi,
-                        'value_en' => isset($data['value_en']) ? $data['value_en'] : $setting->value_en,
+                        'value_vi' => isset($data['value_vi']) ? trim($data['value_vi']) : $setting->value_vi,
+                        'value_en' => isset($data['value_en']) ? trim($data['value_en']) : $setting->value_en,
                     ];
 
                     Log::info("Updating setting: {$key}", $updateData);
+
+                    // Update via service
                     $this->settingService->updateSetting($key, $updateData);
                     $updatedCount++;
                 }
             }
 
-            Log::info("Settings update completed. Updated {$updatedCount} settings.");
-            return back()->with('success', "Đã cập nhật thành công {$updatedCount} cài đặt!");
+            // Return response based on results
+            if (!empty($errors)) {
+                Log::warning("Settings update completed with errors", ['errors' => $errors]);
+                return redirect()->back()
+                    ->with('warning', "Cập nhật hoàn tất với một số lỗi. Đã cập nhật {$updatedCount} cài đặt.")
+                    ->withErrors($errors);
+            }
+
+            Log::info("Settings update completed successfully. Updated {$updatedCount} settings.");
+            return redirect()->back()->with('success', "Đã cập nhật thành công {$updatedCount} cài đặt!");
         } catch (\Exception $e) {
             Log::error('Error updating settings: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString()
             ]);
-            return back()->with('error', 'Lỗi khi cập nhật cài đặt: ' . $e->getMessage());
+            return redirect()->back()
+                ->with('error', 'Lỗi khi cập nhật cài đặt: ' . $e->getMessage())
+                ->withInput();
         }
     }
 }
