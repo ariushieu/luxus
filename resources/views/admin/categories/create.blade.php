@@ -22,10 +22,21 @@
 </div>
 @endif
 
+<!-- Loading Overlay -->
+<div id="loadingOverlay" style="display: none;">
+    <div class="loading-spinner">
+        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-3 text-white fw-bold">Đang tạo danh mục...</p>
+    </div>
+</div>
+
 <div class="row">
     <div class="col-md-8">
-        <form action="{{ route('admin.categories.store') }}" method="POST">
+        <form action="{{ route('admin.categories.store') }}" method="POST" id="categoryForm">
             @csrf
+            <input type="hidden" name="is_active" value="0">
 
             <div class="card mb-3">
                 <div class="card-header">
@@ -97,7 +108,7 @@
                     <hr>
 
                     <!-- Submit Button -->
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
                         <i class="fas fa-save"></i> Lưu Danh mục
                     </button>
                 </div>
@@ -106,8 +117,45 @@
     </div>
 </div>
 
+@push('styles')
+<style>
+    #loadingOverlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .loading-spinner {
+        text-align: center;
+    }
+</style>
+@endpush
+
 @push('scripts')
 <script>
+    // Ngăn chặn submit nhiều lần
+    let isSubmitting = false;
+    document.getElementById('categoryForm').addEventListener('submit', function(e) {
+        if (isSubmitting) {
+            e.preventDefault();
+            return false;
+        }
+
+        isSubmitting = true;
+        const submitBtn = document.getElementById('submitBtn');
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang tạo...';
+        document.getElementById('loadingOverlay').style.display = 'flex';
+    });
+
     // Auto-generate slug from Vietnamese name
     document.getElementById('name_vi').addEventListener('input', function(e) {
         const slug = e.target.value

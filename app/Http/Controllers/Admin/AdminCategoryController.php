@@ -46,11 +46,14 @@ class AdminCategoryController extends Controller
             'slug' => 'required|string|max:255|unique:categories,slug',
             'description_vi' => 'nullable|string',
             'description_en' => 'nullable|string',
-            'is_active' => 'boolean',
+            'is_active' => 'nullable|boolean',
         ]);
 
         // Normalize slug
         $validated['slug'] = Str::slug($validated['slug']);
+
+        // Ensure is_active is set (checkbox behavior)
+        $validated['is_active'] = $request->has('is_active') && $request->is_active == '1';
 
         // Create via service
         $this->categoryService->createCategory($validated);
@@ -83,11 +86,14 @@ class AdminCategoryController extends Controller
             ],
             'description_vi' => 'nullable|string',
             'description_en' => 'nullable|string',
-            'is_active' => 'boolean',
+            'is_active' => 'nullable|boolean',
         ]);
 
         // Normalize slug
         $validated['slug'] = Str::slug($validated['slug']);
+
+        // Ensure is_active is set (checkbox behavior)
+        $validated['is_active'] = $request->has('is_active') && $request->is_active == '1';
 
         // Update via service
         $this->categoryService->updateCategory($category->id, $validated);

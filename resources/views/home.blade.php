@@ -447,75 +447,67 @@
             @forelse($featuredProjects as $index => $project)
             <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="{{ $index * 100 }}">
                 <div class="project-card hover-lift">
-                    <div style="position: relative; overflow: hidden; border-radius: 12px 12px 0 0;">
-                        @if($project->primary_image)
-                        <img src="{{ $project->primary_image->cloudinary_url }}"
+                    <div class="project-card-image">
+                        @if($project->primaryImage)
+                        <img src="{{ $project->primaryImage->cloudinary_url }}"
                             alt="{{ $project->title_vi }}"
-                            class="card-img-top"
-                            style="transition: transform 0.5s ease;">
+                            loading="lazy">
+                        @elseif($project->images && $project->images->isNotEmpty())
+                        <img src="{{ $project->images->first()->cloudinary_url }}"
+                            alt="{{ $project->title_vi }}"
+                            loading="lazy">
                         @else
                         <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=800"
                             alt="{{ $project->title_vi }}"
-                            class="card-img-top"
-                            style="transition: transform 0.5s ease;">
+                            loading="lazy">
                         @endif
+
+                        <div class="project-card-overlay">
+                            <a href="{{ route('projects.show', $project->slug) }}" class="btn btn-light">
+                                <i class="fas fa-arrow-right"></i> Xem chi tiết
+                            </a>
+                        </div>
+
                         @if($project->is_featured)
-                        <div class="position-absolute" style="top: 15px; right: 15px; z-index: 2;">
-                            <span class="badge" style="background: linear-gradient(135deg, var(--secondary-color), #B8960A); 
-                                                       padding: 0.5rem 1rem; font-size: 0.85rem; font-weight: 600;">
-                                <i class="fas fa-star me-1"></i>Nổi bật
-                            </span>
+                        <div class="project-badge featured">
+                            <i class="fas fa-star"></i> Nổi bật
                         </div>
                         @endif
-                        <div class="position-absolute w-100 h-100 d-flex align-items-center justify-content-center"
-                            style="top: 0; left: 0; background: rgba(139, 107, 71, 0.9); opacity: 0; 
-                                    transition: opacity 0.3s; z-index: 1;">
-                            <a href="{{ route('projects.show', $project->slug) }}"
-                                class="btn btn-light btn-lg"
-                                style="border-radius: 50px; padding: 0.75rem 2rem; font-weight: 600;">
-                                <i class="fas fa-eye me-2"></i>Xem chi tiết
-                            </a>
+
+                        @php
+                        $statusBadges = [
+                        'planning' => ['class' => 'secondary', 'text' => 'Lên kế hoạch', 'icon' => 'fa-clock'],
+                        'ongoing' => ['class' => 'info', 'text' => 'Đang thực hiện', 'icon' => 'fa-spinner'],
+                        'completed' => ['class' => 'success', 'text' => 'Hoàn thành', 'icon' => 'fa-check-circle'],
+                        ];
+                        $badge = $statusBadges[$project->status] ?? ['class' => 'secondary', 'text' => $project->status, 'icon' => 'fa-info-circle'];
+                        @endphp
+
+                        <div class="project-badge status status-{{ $badge['class'] }}">
+                            <i class="fas {{ $badge['icon'] }}"></i> {{ $badge['text'] }}
                         </div>
                     </div>
+
                     <div class="project-card-body">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <span class="badge" style="background-color: var(--accent-gold); color: var(--primary-dark); 
-                                                       font-weight: 600; padding: 0.4rem 0.8rem;">
-                                {{ $project->category->name_vi }}
-                            </span>
-                            @php
-                            $statusBadges = [
-                            'planning' => ['class' => 'secondary', 'text' => 'Lên kế hoạch'],
-                            'ongoing' => ['class' => 'info', 'text' => 'Đang thực hiện'],
-                            'completed' => ['class' => 'success', 'text' => 'Hoàn thành'],
-                            ];
-                            $badge = $statusBadges[$project->status] ?? ['class' => 'secondary', 'text' => $project->status];
-                            @endphp
-                            <span class="badge bg-{{ $badge['class'] }}">{{ $badge['text'] }}</span>
+                        <div class="project-category">
+                            <i class="fas fa-folder"></i> {{ $project->category->name_vi }}
                         </div>
-                        <h5 class="project-title">{{ $project->title_vi }}</h5>
-                        <div class="project-meta mb-2">
-                            <span><i class="fas fa-map-marker-alt"></i>{{ $project->location }}</span>
+
+                        <h3 class="project-title">
+                            <a href="{{ route('projects.show', $project->slug) }}">{{ $project->title_vi }}</a>
+                        </h3>
+
+                        <div class="project-meta">
+                            <span><i class="fas fa-map-marker-alt"></i> {{ $project->location }}</span>
                             @if($project->area)
-                            <span class="ms-3"><i class="fas fa-ruler-combined"></i>{{ number_format($project->area) }} m²</span>
+                            <span><i class="fas fa-ruler-combined"></i> {{ number_format($project->area) }} m²</span>
                             @endif
-                        </div>
-                        <p class="card-text" style="color: var(--text-medium); line-height: 1.7;">
-                            {{ Str::limit($project->description_vi, 120) }}
-                        </p>
-                        <div class="d-flex justify-content-between align-items-center mt-3 pt-3"
-                            style="border-top: 1px solid var(--accent-gold);">
-                            <a href="{{ route('projects.show', $project->slug) }}"
-                                class="text-decoration-none"
-                                style="color: var(--primary-color); font-weight: 600;">
-                                Chi tiết <i class="fas fa-arrow-right ms-1"></i>
-                            </a>
                             @if($project->year)
-                            <span style="color: var(--text-light); font-size: 0.9rem;">
-                                <i class="fas fa-calendar me-1"></i>{{ $project->year }}
-                            </span>
+                            <span><i class="fas fa-calendar"></i> {{ $project->year }}</span>
                             @endif
                         </div>
+
+                        <p class="project-description">{{ Str::limit($project->description_vi, 100) }}</p>
                     </div>
                 </div>
             </div>

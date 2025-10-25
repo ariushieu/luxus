@@ -134,17 +134,26 @@
 <script>
     let isSubmitting = false;
     document.getElementById('sliderForm').addEventListener('submit', function(e) {
+        // Ngăn chặn submit nhiều lần
         if (isSubmitting) {
             e.preventDefault();
             return false;
         }
 
+        isSubmitting = true;
+        const submitBtn = document.getElementById('submitBtn');
         const fileInput = document.getElementById('image');
+
+        // Disable button và show loading
+        submitBtn.disabled = true;
+
         if (fileInput.files.length > 0) {
-            isSubmitting = true;
+            // Có upload ảnh mới
             document.getElementById('loadingOverlay').style.display = 'flex';
-            document.getElementById('submitBtn').disabled = true;
-            document.getElementById('submitBtn').innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang tải lên...';
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang tải ảnh lên...';
+        } else {
+            // Không có ảnh mới, chỉ update thông tin
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang cập nhật...';
         }
     });
 

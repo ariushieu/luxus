@@ -20,9 +20,9 @@ class DashboardController extends Controller
             'total_categories' => Category::count(),
         ];
 
-        $recentBookings = Booking::latest()->limit(5)->get();
-        $recentQuotes = Quote::latest()->limit(5)->get();
-        $recentProjects = Project::with('category')->latest()->limit(5)->get();
+        $recentBookings = Booking::latest()->limit(3)->get();
+        $recentQuotes = Quote::latest()->limit(3)->get();
+        $recentProjects = Project::with('category')->latest()->limit(3)->get();
 
         return view('admin.dashboard', compact('stats', 'recentBookings', 'recentQuotes', 'recentProjects'));
     }

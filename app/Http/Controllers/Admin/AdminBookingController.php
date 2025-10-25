@@ -26,7 +26,7 @@ class AdminBookingController extends Controller
             $query->where('status', $request->status);
         }
 
-        $bookings = $query->paginate(20);
+        $bookings = $query->paginate(10);
 
         // Get counts for filter tabs
         $statusCounts = [

@@ -35,6 +35,8 @@
 <form action="{{ route('admin.projects.update', $project) }}" method="POST" id="editForm">
     @csrf
     @method('PUT')
+    <input type="hidden" name="is_active" value="0">
+    <input type="hidden" name="is_featured" value="0">
 
     <div class="row">
         <!-- Left Column -->
@@ -134,16 +136,13 @@
                                     @if($image->is_primary)
                                     <span class="badge bg-primary w-100 mb-1">Ảnh chính</span>
                                     @endif
-                                    <form action="{{ route('admin.projects.images.delete', $image->id) }}"
-                                        method="POST"
-                                        class="delete-image-form"
-                                        onsubmit="return confirmDelete(event, this);">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-danger w-100">
-                                            <i class="fas fa-trash"></i> Xóa
-                                        </button>
-                                    </form>
+                                    <button type="button"
+                                        class="btn btn-sm btn-danger w-100 delete-image-btn"
+                                        data-image-id="{{ $image->id }}"
+                                        data-image-url="{{ route('admin.projects.images.delete', $image->id) }}"
+                                        data-is-primary="{{ $image->is_primary ? '1' : '0' }}">
+                                        <i class="fas fa-trash"></i> Xóa
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -193,6 +192,19 @@
                         </div>
                     </div>
 
+                    <!-- Featured Status -->
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="is_featured"
+                                name="is_featured" value="1"
+                                {{ old('is_featured', $project->is_featured) ? 'checked' : '' }}>
+                            <label class="form-check-label" for="is_featured">
+                                <i class="fas fa-star text-warning me-1"></i>Dự án nổi bật
+                            </label>
+                        </div>
+                        <small class="text-muted">Dự án nổi bật sẽ hiển thị ở trang chủ</small>
+                    </div>
+
                     <hr>
 
                     <!-- Submit Button -->
@@ -203,6 +215,47 @@
             </div>
         </div>
     </div>
+</form>
+
+<!-- Delete Image Confirmation Modal -->
+<div class="modal fade" id="deleteImageModal" tabindex="-1" aria-labelledby="deleteImageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteImageModalLabel">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Xác nhận xóa ảnh
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-3">
+                    <i class="fas fa-image fa-3x text-danger"></i>
+                </div>
+                <h5 class="text-center mb-3">Bạn có chắc muốn xóa ảnh này?</h5>
+                <div class="alert alert-danger mb-0" id="warningPrimaryImage" style="display: none;">
+                    <i class="fas fa-exclamation-triangle me-1"></i>
+                    <strong>Cảnh báo:</strong> Đây là ảnh chính! Vui lòng chọn ảnh chính khác trước khi xóa.
+                </div>
+                <p class="text-danger text-center mt-3 mb-0" id="warningCanDeleteImage">
+                    <small><i class="fas fa-exclamation-circle me-1"></i>Ảnh sẽ bị xóa khỏi Cloudinary và không thể khôi phục!</small>
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i>Hủy bỏ
+                </button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteImageBtn">
+                    <i class="fas fa-trash me-1"></i>Xóa ảnh
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden form for delete image -->
+<form id="deleteImageForm" method="POST" style="display: none;">
+    @csrf
+    @method('DELETE')
 </form>
 
 <!-- Upload Image Modal -->
@@ -297,18 +350,85 @@
         document.getElementById('uploadBtn').innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang tải...';
     });
 
-    // Delete confirmation
-    function confirmDelete(e, form) {
-        e.preventDefault();
+    // Delete image modal
+    const deleteImageModal = new bootstrap.Modal(document.getElementById('deleteImageModal'));
+    const confirmDeleteImageBtn = document.getElementById('confirmDeleteImageBtn');
+    const deleteImageForm = document.getElementById('deleteImageForm');
+    const warningPrimaryImage = document.getElementById('warningPrimaryImage');
+    const warningCanDeleteImage = document.getElementById('warningCanDeleteImage');
 
-        if (confirm('Bạn có chắc muốn xóa ảnh này?')) {
-            document.getElementById('loadingOverlay').style.display = 'flex';
-            document.getElementById('loadingText').textContent = 'Đang xóa ảnh...';
-            form.submit();
+    let currentDeleteImageUrl = '';
+    let currentDeleteImageBtn = null;
+    let isDeletingImage = false;
+
+    // Xử lý click vào nút xóa ảnh
+    document.querySelectorAll('.delete-image-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            if (isDeletingImage) {
+                return false;
+            }
+
+            const deleteUrl = this.dataset.imageUrl;
+            const isPrimary = this.dataset.isPrimary === '1';
+
+            currentDeleteImageUrl = deleteUrl;
+            currentDeleteImageBtn = this;
+
+            // Kiểm tra nếu là ảnh chính
+            if (isPrimary) {
+                warningPrimaryImage.style.display = 'block';
+                warningCanDeleteImage.style.display = 'none';
+                confirmDeleteImageBtn.disabled = true;
+                confirmDeleteImageBtn.innerHTML = '<i class="fas fa-ban me-1"></i>Không thể xóa';
+            } else {
+                warningPrimaryImage.style.display = 'none';
+                warningCanDeleteImage.style.display = 'block';
+                confirmDeleteImageBtn.disabled = false;
+                confirmDeleteImageBtn.innerHTML = '<i class="fas fa-trash me-1"></i>Xóa ảnh';
+            }
+
+            deleteImageModal.show();
+        });
+    });
+
+    // Xử lý confirm delete ảnh
+    confirmDeleteImageBtn.addEventListener('click', function() {
+        if (isDeletingImage || this.disabled) {
+            return false;
         }
 
-        return false;
-    }
+        isDeletingImage = true;
+
+        // Disable button
+        confirmDeleteImageBtn.disabled = true;
+        confirmDeleteImageBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang xóa...';
+
+        if (currentDeleteImageBtn) {
+            currentDeleteImageBtn.disabled = true;
+            currentDeleteImageBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+        }
+
+        // Đóng modal
+        deleteImageModal.hide();
+
+        // Show loading overlay
+        setTimeout(() => {
+            document.getElementById('loadingOverlay').style.display = 'flex';
+            document.getElementById('loadingText').textContent = 'Đang xóa ảnh...';
+        }, 300);
+
+        // Submit form
+        deleteImageForm.action = currentDeleteImageUrl;
+        deleteImageForm.submit();
+    });
+
+    // Reset modal
+    document.getElementById('deleteImageModal').addEventListener('hidden.bs.modal', function() {
+        if (!isDeletingImage) {
+            confirmDeleteImageBtn.disabled = false;
+            confirmDeleteImageBtn.innerHTML = '<i class="fas fa-trash me-1"></i>Xóa ảnh';
+        }
+    });
 
     function previewNewImage(event) {
         const preview = document.getElementById('newImagePreview');

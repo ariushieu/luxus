@@ -26,7 +26,7 @@ class AdminQuoteController extends Controller
             $query->where('status', $request->status);
         }
 
-        $quotes = $query->paginate(20);
+        $quotes = $query->paginate(10);
 
         // Get counts for filter tabs
         $statusCounts = [

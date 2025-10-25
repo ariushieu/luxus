@@ -34,7 +34,7 @@ class ProjectService
 
     public function getAllActiveProjects(array $filters = [])
     {
-        return $this->projectRepository->getActive($filters);
+        return $this->projectRepository->getActive($filters)->paginate(12);
     }
 
     public function getFeaturedProjects(int $limit = 6)
@@ -57,10 +57,10 @@ class ProjectService
         $query = $this->projectRepository->getByCategory($categoryId, $filters);
 
         if ($limit) {
-            return $query->take($limit);
+            return $query->limit($limit)->get();
         }
 
-        return $query;
+        return $query->paginate(12);
     }
 
     public function createProject(array $data)

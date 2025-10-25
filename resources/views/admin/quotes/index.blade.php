@@ -211,15 +211,11 @@
 
     @if($quotes->hasPages())
     <div class="card-footer bg-white border-top-0">
-        <div class="d-flex justify-content-between align-items-center">
-            <div class="text-muted small">
-                Hiển thị {{ $quotes->firstItem() ?? 0 }} - {{ $quotes->lastItem() ?? 0 }}
-                trong tổng số {{ $quotes->total() }} yêu cầu
-            </div>
-            <div>
-                {{ $quotes->links() }}
-            </div>
+        <div class="text-muted small mb-2">
+            Hiển thị <strong>{{ $quotes->firstItem() ?? 0 }} - {{ $quotes->lastItem() ?? 0 }}</strong>
+            trong tổng số <strong>{{ $quotes->total() }}</strong> yêu cầu
         </div>
+        {{ $quotes->appends(request()->query())->links('vendor.pagination.custom') }}
     </div>
     @endif
 </div>
@@ -227,10 +223,32 @@
 
 @push('styles')
 <style>
+    /* Prevent horizontal scrollbar */
+    body,
+    html {
+        overflow-x: hidden !important;
+    }
+
+    .data-table {
+        overflow-x: auto;
+    }
+
+    /* Reserve space at bottom to prevent scrollbar flickering */
+    .card {
+        margin-bottom: 30px;
+    }
+
+    .pagination-container {
+        padding: 20px 0 40px 0;
+        /* Extra bottom padding */
+        max-width: 100%;
+    }
+
+    /* Nav Pills */
     .nav-pills .nav-link {
         border-radius: 8px;
         font-weight: 600;
-        transition: all 0.3s ease;
+        transition: all 0.2s ease;
         border: 2px solid transparent;
         color: #8B6B47;
     }
@@ -268,15 +286,102 @@
     .nav-pills .nav-link:not(.active):hover {
         background-color: rgba(139, 107, 71, 0.1);
         border-color: #8B6B47;
-        transform: translateY(-2px);
     }
 
+    /* Avatar */
     .avatar-circle {
         box-shadow: 0 2px 8px rgba(139, 107, 71, 0.3);
     }
 
+    /* Project Type Badge */
     .project-type-badge {
         font-size: 0.85rem;
+    }
+
+    /* Table Row Hover */
+    .table-hover tbody tr {
+        transition: background-color 0.2s ease;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(139, 107, 71, 0.05);
+    }
+
+    /* Status Badges Animation */
+    .badge {
+        animation: fadeInScale 0.5s ease-out;
+    }
+
+    @keyframes fadeInScale {
+        from {
+            opacity: 0;
+            transform: scale(0.8);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    /* Pagination Container */
+    .pagination-container {
+        padding: 15px 0;
+        max-width: 100%;
+    }
+
+    /* Ultra Simple Pagination - NO HOVER EFFECTS */
+    ul.pagination {
+        display: flex;
+        flex-wrap: wrap;
+        list-style: none;
+        padding: 0;
+        margin: 0 auto;
+        gap: 6px;
+        justify-content: center;
+        max-width: fit-content;
+    }
+
+    ul.pagination li {
+        display: inline-block;
+        margin: 0;
+    }
+
+    ul.pagination li a,
+    ul.pagination li span {
+        display: block;
+        width: 38px;
+        height: 38px;
+        line-height: 34px;
+        padding: 0;
+        border: 2px solid #dee2e6;
+        border-radius: 6px;
+        background: #fff;
+        color: #8B6B47;
+        font-weight: 600;
+        font-size: 14px;
+        text-decoration: none;
+        text-align: center;
+        cursor: default;
+        /* Prevent cursor change to stop reflow */
+    }
+
+    ul.pagination li a {
+        cursor: pointer;
+        /* Only links clickable */
+    }
+
+    ul.pagination li.active span {
+        background: #8B6B47;
+        color: #fff;
+        border-color: #8B6B47;
+    }
+
+    ul.pagination li.disabled span {
+        background: #f8f9fa;
+        color: #999;
+        cursor: not-allowed;
+        opacity: 0.5;
     }
 </style>
 

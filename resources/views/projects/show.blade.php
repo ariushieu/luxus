@@ -439,11 +439,35 @@ $heroImage = $project->primaryImage ? $project->primaryImage->cloudinary_url : '
                     </h5>
                     <p class="text-muted mb-4">Để lại thông tin, chúng tôi sẽ liên hệ tư vấn miễn phí</p>
 
-                    @if(session('success'))
-                    <div class="alert alert-success" style="border-radius: 10px;">
-                        <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+                    <!-- Toast Container -->
+                    <div class="position-fixed top-0 end-0 p-3" style="z-index: 99999; margin-top: 80px;">
+                        @if(session('success'))
+                        <div class="toast align-items-center text-white bg-success border-0 show" role="alert" aria-live="assertive" aria-atomic="true" id="successToast">
+                            <div class="d-flex">
+                                <div class="toast-body">
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    <strong>Thành công!</strong> {{ session('success') }}
+                                </div>
+                                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                            </div>
+                        </div>
+                        @endif
+
+                        @if($errors->any())
+                        <div class="toast align-items-center text-white bg-danger border-0 show" role="alert" aria-live="assertive" aria-atomic="true" id="errorToast">
+                            <div class="d-flex">
+                                <div class="toast-body">
+                                    <i class="fas fa-exclamation-circle me-2"></i>
+                                    <strong>Lỗi!</strong>
+                                    @foreach($errors->all() as $error)
+                                    {{ $error }}<br>
+                                    @endforeach
+                                </div>
+                                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                            </div>
+                        </div>
+                        @endif
                     </div>
-                    @endif
 
                     <form action="{{ route('quote.store') }}" method="POST" id="quoteForm">
                         @csrf
@@ -653,10 +677,21 @@ $heroImage = $project->primaryImage ? $project->primaryImage->cloudinary_url : '
         if (quoteForm) {
             quoteForm.addEventListener('submit', function() {
                 const submitBtn = document.getElementById('submitBtn');
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang gửi...';
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang gửi...';
+                }
             });
         }
+
+        // Auto-hide toasts after 5 seconds
+        const toasts = document.querySelectorAll('.toast.show');
+        toasts.forEach(toast => {
+            setTimeout(() => {
+                const bsToast = new bootstrap.Toast(toast);
+                bsToast.hide();
+            }, 5000);
+        });
     });
 </script>
 @endpush

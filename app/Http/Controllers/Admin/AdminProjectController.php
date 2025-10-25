@@ -10,6 +10,7 @@ use App\Services\ProjectService;
 use App\Services\CloudinaryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
 
 class AdminProjectController extends Controller
 {
@@ -23,7 +24,7 @@ class AdminProjectController extends Controller
      */
     public function index()
     {
-        $projects = Project::with(['category', 'images'])
+        $projects = Project::with(['category', 'images', 'primaryImage'])
             ->withCount('images')
             ->latest()
             ->paginate(20);
@@ -55,24 +56,46 @@ class AdminProjectController extends Controller
             'location' => 'nullable|string|max:255',
             'area' => 'nullable|numeric',
             'completed_at' => 'nullable|date',
-            'is_active' => 'boolean',
+            'is_active' => 'nullable|boolean',
+            'is_featured' => 'nullable|boolean',
             'images.*' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:5120', // 5MB max
         ]);
 
         // Generate unique slug from Vietnamese name
         $validated['slug'] = Str::slug($validated['title_vi']) . '-' . time();
 
+        // Handle checkbox for is_active
+        $validated['is_active'] = $request->has('is_active') && $request->is_active == '1';
+
+        // Handle checkbox for is_featured
+        $validated['is_featured'] = $request->has('is_featured') && $request->is_featured == '1';
+
         // Create project via service
         $project = $this->projectService->createProject($validated);
 
         // Upload images if provided
         if ($request->hasFile('images')) {
+            $uploadedCount = 0;
+            $failedCount = 0;
+
             foreach ($request->file('images') as $index => $imageFile) {
-                $this->projectService->addProjectImage(
-                    $project->id,
-                    $imageFile,
-                    ['is_primary' => $index === 0] // First image is primary
-                );
+                try {
+                    $this->projectService->addProjectImage(
+                        $project->id,
+                        $imageFile,
+                        ['is_primary' => $index === 0] // First image is primary
+                    );
+                    $uploadedCount++;
+                    Log::info("Image {$index} uploaded successfully for project {$project->id}");
+                } catch (\Exception $e) {
+                    $failedCount++;
+                    Log::error("Failed to upload image {$index} for project {$project->id}: " . $e->getMessage());
+                }
+            }
+
+            if ($failedCount > 0) {
+                return redirect()->route('admin.projects.index')
+                    ->with('warning', "Dự án đã được tạo! Đã tải lên {$uploadedCount} ảnh, {$failedCount} ảnh thất bại.");
             }
         }
 
@@ -106,10 +129,15 @@ class AdminProjectController extends Controller
             'location' => 'nullable|string|max:255',
             'area' => 'nullable|numeric',
             'completed_at' => 'nullable|date',
+            'is_active' => 'nullable|boolean',
+            'is_featured' => 'nullable|boolean',
         ]);
 
         // Handle checkbox for is_active
-        $validated['is_active'] = $request->has('is_active');
+        $validated['is_active'] = $request->has('is_active') && $request->is_active == '1';
+
+        // Handle checkbox for is_featured
+        $validated['is_featured'] = $request->has('is_featured') && $request->is_featured == '1';
 
         // Update slug if title changed
         if ($validated['title_vi'] !== $project->title_vi) {

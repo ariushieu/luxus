@@ -35,7 +35,7 @@ class ProjectRepository implements ProjectRepositoryInterface
             $query->where('status', $filters['status']);
         }
 
-        return $query->orderBy('display_order')->get();
+        return $query->orderBy('display_order')->orderBy('created_at', 'desc');
     }
 
     public function getFeatured(int $limit = 6)
@@ -64,9 +64,9 @@ class ProjectRepository implements ProjectRepositoryInterface
     {
         $query = Project::where('category_id', $categoryId)
             ->where('is_active', true)
-            ->with(['primaryImage']);
+            ->with(['category', 'primaryImage']);
 
-        return $query->orderBy('display_order')->get();
+        return $query->orderBy('display_order')->orderBy('created_at', 'desc');
     }
 
     public function create(array $data)

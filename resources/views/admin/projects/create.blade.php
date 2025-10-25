@@ -34,6 +34,8 @@
 
 <form action="{{ route('admin.projects.store') }}" method="POST" enctype="multipart/form-data" id="projectForm">
     @csrf
+    <input type="hidden" name="is_active" value="0">
+    <input type="hidden" name="is_featured" value="0">
 
     <div class="row">
         <!-- Left Column -->
@@ -170,6 +172,18 @@
                         </div>
                     </div>
 
+                    <!-- Featured Status -->
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="is_featured"
+                                name="is_featured" value="1" {{ old('is_featured', false) ? 'checked' : '' }}>
+                            <label class="form-check-label" for="is_featured">
+                                <i class="fas fa-star text-warning me-1"></i>Dự án nổi bật
+                            </label>
+                        </div>
+                        <small class="text-muted">Dự án nổi bật sẽ hiển thị ở trang chủ</small>
+                    </div>
+
                     <hr>
 
                     <!-- Submit Button -->
@@ -205,7 +219,6 @@
 
 @push('scripts')
 <script>
-    // Prevent double submission
     let isSubmitting = false;
     document.getElementById('projectForm').addEventListener('submit', function(e) {
         if (isSubmitting) {
@@ -213,13 +226,19 @@
             return false;
         }
 
-        // Check if images selected
+        isSubmitting = true;
+        const submitBtn = document.getElementById('submitBtn');
         const filesInput = document.getElementById('images');
+
+        // Disable button
+        submitBtn.disabled = true;
+
+        // Check if images selected
         if (filesInput.files.length > 0) {
-            isSubmitting = true;
             document.getElementById('loadingOverlay').style.display = 'flex';
-            document.getElementById('submitBtn').disabled = true;
-            document.getElementById('submitBtn').innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang tải lên...';
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang tải ảnh lên...';
+        } else {
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang tạo...';
         }
     });
 

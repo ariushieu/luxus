@@ -138,9 +138,150 @@
             </table>
         </div>
 
-        <div class="mt-3">
-            {{ $bookings->links() }}
+        @if($bookings->hasPages())
+        <div class="pagination-container text-center">
+            {{ $bookings->appends(request()->query())->links('vendor.pagination.custom') }}
         </div>
+        @endif
     </div>
 </div>
+
+@push('styles')
+<style>
+    /* Reserve space at bottom to prevent scrollbar flickering */
+    .card {
+        margin-bottom: 30px;
+    }
+
+    .pagination-container {
+        padding: 20px 0 40px 0;
+        /* Extra bottom padding */
+        max-width: 100%;
+    }
+
+    /* Loading Overlay */
+    .loading-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.95);
+        z-index: 9999;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .loading-overlay.active {
+        display: flex;
+    }
+
+    .loading-content {
+        text-align: center;
+    }
+
+    .loading-spinner {
+        width: 60px;
+        height: 60px;
+        border: 4px solid rgba(139, 107, 71, 0.2);
+        border-top-color: var(--primary-color);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 1rem;
+    }
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* Status Badges Animation */
+    .badge {
+        animation: fadeInScale 0.5s ease-out;
+    }
+
+    @keyframes fadeInScale {
+        from {
+            opacity: 0;
+            transform: scale(0.8);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    /* Table Row Hover */
+    .table-hover tbody tr {
+        transition: background-color 0.2s ease;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: rgba(139, 107, 71, 0.05);
+    }
+
+    /* Pagination Container */
+    .pagination-container {
+        padding: 15px 0;
+        max-width: 100%;
+    }
+
+    /* Ultra Simple Pagination - NO HOVER EFFECTS */
+    ul.pagination {
+        display: flex;
+        flex-wrap: wrap;
+        list-style: none;
+        padding: 0;
+        margin: 0 auto;
+        gap: 6px;
+        justify-content: center;
+        max-width: fit-content;
+    }
+
+    ul.pagination li {
+        display: inline-block;
+        margin: 0;
+    }
+
+    ul.pagination li a,
+    ul.pagination li span {
+        display: block;
+        width: 38px;
+        height: 38px;
+        line-height: 34px;
+        padding: 0;
+        border: 2px solid #dee2e6;
+        border-radius: 6px;
+        background: #fff;
+        color: #8B6B47;
+        font-weight: 600;
+        font-size: 14px;
+        text-decoration: none;
+        text-align: center;
+        cursor: default;
+        /* Prevent cursor change to stop reflow */
+    }
+
+    ul.pagination li a {
+        cursor: pointer;
+        /* Only links clickable */
+    }
+
+    ul.pagination li.active span {
+        background: #8B6B47;
+        color: #fff;
+        border-color: #8B6B47;
+    }
+
+    ul.pagination li.disabled span {
+        background: #f8f9fa;
+        color: #999;
+        cursor: not-allowed;
+        opacity: 0.5;
+    }
+</style>
+@endpush
 @endsection

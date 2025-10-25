@@ -25,12 +25,13 @@ class StoreBookingRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'client_name.required' => 'Name is required',
-            'client_email.required' => 'Email is required',
-            'client_email.email' => 'Invalid email format',
-            'client_phone.required' => 'Phone number is required',
-            'booking_time.required' => 'Booking time is required',
-            'booking_time.after' => 'Booking time must be in the future',
+            'client_name.required' => 'Vui lòng nhập họ tên',
+            'client_email.required' => 'Vui lòng nhập email',
+            'client_email.email' => 'Email không hợp lệ',
+            'client_phone.required' => 'Vui lòng nhập số điện thoại',
+            'booking_time.required' => 'Vui lòng chọn thời gian đặt lịch',
+            'booking_time.after' => 'Thời gian đặt lịch phải sau thời điểm hiện tại',
+            'message.max' => 'Lời nhắn không được vượt quá 1000 ký tự',
         ];
     }
 }

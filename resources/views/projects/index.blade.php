@@ -164,7 +164,7 @@
 </div>
 
 <!-- Category Filter Section -->
-<div class="filter-section">
+<div class="filter-section" id="projects-section">
     <div class="container">
         <div class="text-center mb-4">
             <h2 class="section-title" style="font-size: 2rem; margin-bottom: 0.5rem;">Danh mục dự án</h2>
@@ -201,12 +201,18 @@
             <div class="col-lg-4 col-md-6">
                 <div class="project-card">
                     <div class="project-card-image">
-                        @if($project->primary_image)
-                        <img src="{{ $project->primary_image->cloudinary_url }}"
-                            alt="{{ $project->title_vi }}">
+                        @if($project->primaryImage)
+                        <img src="{{ $project->primaryImage->cloudinary_url }}"
+                            alt="{{ $project->title_vi }}"
+                            loading="lazy">
+                        @elseif($project->images && $project->images->isNotEmpty())
+                        <img src="{{ $project->images->first()->cloudinary_url }}"
+                            alt="{{ $project->title_vi }}"
+                            loading="lazy">
                         @else
                         <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=800"
-                            alt="{{ $project->title_vi }}">
+                            alt="{{ $project->title_vi }}"
+                            loading="lazy">
                         @endif
 
                         <div class="project-card-overlay">
@@ -277,9 +283,79 @@
         <!-- Pagination -->
         @if(method_exists($projects, 'hasPages') && $projects->hasPages())
         <div class="d-flex justify-content-center mt-5">
-            {{ $projects->links() }}
+            <nav aria-label="Project pagination" class="custom-pagination">
+                {{ $projects->links('pagination::bootstrap-5') }}
+            </nav>
         </div>
         @endif
     </div>
 </section>
+
+@push('styles')
+<style>
+    /* Custom Pagination Styles */
+    .custom-pagination {
+        scroll-margin-top: 100px;
+        /* Prevent jump when paginating */
+    }
+
+    .custom-pagination .pagination {
+        gap: 0.5rem;
+        justify-content: center;
+    }
+
+    .custom-pagination .page-link {
+        border: 2px solid #E5E5E5;
+        border-radius: 8px;
+        color: var(--primary-color);
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        transition: all 0.3s ease;
+        margin: 0;
+    }
+
+    .custom-pagination .page-link:hover {
+        background: var(--primary-color);
+        border-color: var(--primary-color);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(139, 107, 71, 0.3);
+    }
+
+    .custom-pagination .page-item.active .page-link {
+        background: linear-gradient(135deg, var(--primary-color) 0%, #6B4423 100%);
+        border-color: var(--primary-color);
+        color: white;
+        box-shadow: 0 4px 12px rgba(139, 107, 71, 0.3);
+    }
+
+    .custom-pagination .page-item.disabled .page-link {
+        background: #F5F5F5;
+        border-color: #E5E5E5;
+        color: #999;
+    }
+
+    .custom-pagination .page-link:focus {
+        box-shadow: 0 0 0 0.2rem rgba(139, 107, 71, 0.25);
+        outline: none;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Smooth scroll to projects section after page load (pagination)
+        if (window.location.search.includes('page=')) {
+            setTimeout(() => {
+                const projectsSection = document.querySelector('#projects-section');
+                if (projectsSection) {
+                    projectsSection.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            }, 100);
+        }
+    });
+</script>
+@endpush
 @endsection
