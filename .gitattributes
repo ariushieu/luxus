@@ -11,3 +11,6 @@ text=auto eol=lf
 /.github export-ignore
 CHANGELOG.md export-ignore
 .styleci.yml export-ignore
+
+# Loai bo cac file tu thu vien, giup giam dung luong PHP
+vendor/** linguist-detectable=false
