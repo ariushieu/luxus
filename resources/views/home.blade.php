@@ -236,7 +236,7 @@
             style="background-image: url('{{ $slider->cloudinary_url }}');">
             <div class="carousel-caption">
                 <h1 class="text-white">LUXUS</h1>
-                <p class="text-white">KIẾN TẠO KHÔNG GIAN VƯỢT TRỜI</p>
+                <p class="text-white">KIẾN TẠO KHÔNG GIAN VƯỢT TRỘI</p>
                 <p class="text-white" style="font-size: 1.3rem; opacity: 0.95; font-style: italic; letter-spacing: 2px;">
                     Creating Spaces Beyond Imagination
                 </p>
@@ -270,7 +270,7 @@
             style="background-image: url('https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=1920');">
             <div class="carousel-caption">
                 <h1 class="text-white">LUXUS</h1>
-                <p class="text-white">KIẾN TẠO KHÔNG GIAN VƯỢT TRỜI</p>
+                <p class="text-white">KIẾN TẠO KHÔNG GIAN VƯỢT TRỘI</p>
                 <p class="text-white" style="font-size: 1.3rem; opacity: 0.95; font-style: italic; letter-spacing: 2px;">
                     Creating Spaces Beyond Imagination
                 </p>
@@ -334,7 +334,7 @@
                                  letter-spacing: 2px; font-size: 0.9rem;">Về chúng tôi</span>
                     <h2 style="font-family: 'Cormorant Garamond', serif; font-size: 3rem; 
                                color: var(--primary-color); font-weight: 700; margin: 1rem 0 1.5rem; line-height: 1.2;">
-                        LUXUS - Kiến Tạo<br>Không Gian Vượt Trời
+                        LUXUS - Kiến Tạo<br>Không Gian Vượt Trội
                     </h2>
                     <div style="width: 60px; height: 3px; background: var(--secondary-color); margin-bottom: 2rem;"></div>
                     <p class="lead" style="font-size: 1.15rem; color: var(--text-medium); line-height: 1.8; margin-bottom: 1.5rem;">

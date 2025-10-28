@@ -87,7 +87,7 @@
                 <span style="color: var(--secondary-color); font-weight: 600; text-transform: uppercase; 
                              letter-spacing: 2px; font-size: 0.9rem;">Câu chuyện của chúng tôi</span>
                 <h2 class="section-title" style="margin-top: 1rem;">
-                    {{ $settings['about_title']->value_vi ?? 'LUXUS - KIẾN TẠO KHÔNG GIAN VƯỢT TRỜI' }}
+                    {{ $settings['about_title']->value_vi ?? 'LUXUS - KIẾN TẠO KHÔNG GIAN VƯỢT TRỘI' }}
                 </h2>
                 <p class="lead" style="font-size: 1.2rem; line-height: 1.9; color: var(--text-medium); max-width: 900px; margin: 0 auto;">
                     {{ $settings['about_intro']->value_vi ?? 'Chào mừng bạn đến với LUXUS – nơi bạn sẽ khám phá vẻ đẹp và ý nghĩa của kiến trúc. Đây cũng chính là điểm bắt đầu trong cuộc thám hiểm tâm hồn và ý tưởng của bạn.' }}
