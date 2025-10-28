@@ -107,7 +107,3 @@ php artisan test
 ## License
 
 MIT License
-
----
-
-Built with ❤️ using Laravel
